@@ -1,0 +1,57 @@
+# ==============================================================================
+# RiskPulse — Version Control Exclusions (.gitignore)
+# ==============================================================================
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.ipynb_checkpoints/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Configuration & Private Variables
+.env
+.env.local
+.env.*
+!.env.example
+
+# IDE & System Files
+.vscode/
+.idea/
+.project
+.pydevproject
+.settings/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+Thumbs.db
+
+# RiskPulse Dataset Exclusions (Ingested source files and engineered outputs)
+ml/data/training_dataset.csv
+ml/data/enhanced_training_dataset.csv
+ml/data/*.csv
+
+# RiskPulse Model Binaries (Prevent committing heavy binary estimators to Git)
+ml/models/*.pkl
+ml/models/xgboost_hpo_metadata.json
+ml/models/selected_features.json
+ml/models/optimized_threshold.json
+ml/models/production_model_meta.json
+
+# RiskPulse Logging & Visual Outputs
+ml/outputs/**/*.csv
+ml/outputs/**/*.png
+ml/outputs/**/*.json
+ml/outputs/logs/*.log
+ml/outputs/shap/
