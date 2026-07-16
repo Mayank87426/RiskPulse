@@ -49,6 +49,13 @@ ml/models/selected_features.json
 ml/models/optimized_threshold.json
 ml/models/production_model_meta.json
 
+# Allow committing specific production models
+!ml/models/calibrated_xgboost.pkl
+!ml/models/preprocessor.pkl
+!ml/models/shap_explainer.pkl
+!ml/models/optimized_threshold.json
+!ml/models/selected_features.json
+
 # RiskPulse Logging & Visual Outputs
 ml/outputs/**/*.csv
 ml/outputs/**/*.png

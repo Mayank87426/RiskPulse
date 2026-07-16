@@ -42,6 +42,7 @@ def render_news_panel(news_list):
         description = item.get("description", "")
         sentiment = item.get("sentiment", "Neutral")
         score = float(item.get("sentiment_score", 0.0))
+        is_simulated = url.startswith("https://riskpulse.ai")
         
         # Calculate a mock confidence score to structure FinBERT compatibility
         confidence = round(0.70 + abs(score) * 0.25, 2)
@@ -49,11 +50,11 @@ def render_news_panel(news_list):
         
         sent_class = f"badge-{sentiment.lower()}"
         
-        card_html = textwrap.dedent(f"""
-            <a href="{url}" target="_blank" class="news-card-link">
-                <div class="news-card">
+        if is_simulated:
+            card_html = textwrap.dedent(f"""
+                <div class="news-card news-card-simulated" style="cursor: default;">
                     <div class="news-meta">
-                        <span>📰 {source} • {published_str}</span>
+                        <span>📰 {source} • {published_str} (Simulated)</span>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
                             <span class="pulse-badge {sent_class}">{sentiment}</span>
                             <span style="color: #6B7280; font-size: 0.65rem;">Conf: <b>{confidence_str}</b></span>
@@ -62,8 +63,23 @@ def render_news_panel(news_list):
                     <div class="news-headline">{title}</div>
                     <div class="news-snippet">{description}</div>
                 </div>
-            </a>
-        """)
+            """)
+        else:
+            card_html = textwrap.dedent(f"""
+                <a href="{url}" target="_blank" class="news-card-link">
+                    <div class="news-card">
+                        <div class="news-meta">
+                            <span>📰 {source} • {published_str}</span>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <span class="pulse-badge {sent_class}">{sentiment}</span>
+                                <span style="color: #6B7280; font-size: 0.65rem;">Conf: <b>{confidence_str}</b></span>
+                            </div>
+                        </div>
+                        <div class="news-headline">{title}</div>
+                        <div class="news-snippet">{description}</div>
+                    </div>
+                </a>
+            """)
         st.markdown(card_html, unsafe_allow_html=True)
 
 def render_sentiment_summary(summary):
