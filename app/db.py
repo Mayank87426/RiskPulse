@@ -9,12 +9,16 @@ load_dotenv()
 
 def get_connection():
     """Establishes connection to the database. Does not use cache to avoid connection state leaks."""
+    db_url = os.getenv("DATABASE_URL")
+    if db_url:
+        return psycopg2.connect(db_url)
+        
     return psycopg2.connect(
-        host="localhost",
-        database="RIskPulse_DB",
-        user="postgres",
-        password="Mk123.jha@post",
-        port="5432"
+        host=os.getenv("DB_HOST", "localhost"),
+        database=os.getenv("DB_NAME", "RIskPulse_DB"),
+        user=os.getenv("DB_USER", "postgres"),
+        password=os.getenv("DB_PASSWORD", "Mk123.jha@post"),
+        port=os.getenv("DB_PORT", "5432")
     )
 
 @st.cache_data(ttl=600)
