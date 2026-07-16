@@ -1,18 +1,37 @@
 import pandas as pd
 from database import get_connection
+import os
 
-df = pd.read_csv("../data/tech_layoffs_till_2025.csv")
+data_path = os.path.join(os.path.dirname(__file__), "..", "data", "tech_layoffs_till_2025.csv")
+df = pd.read_csv(data_path)
 
 companies = df.drop_duplicates(subset=["Company"])
+
+from psycopg2.extras import execute_values
 
 companies = companies.where(pd.notnull(companies), None)
 
 conn = get_connection()
 cur = conn.cursor()
 
-for _, row in companies.iterrows():
+# Prepare values for batch insertion
+values = [
+    (
+        row["Company"],
+        row["Industry"],
+        row["Country"],
+        row["Location_HQ"],
+        row["Continent"],
+        row["Stage"],
+        row["Money_Raised_in__mil"],
+        row["latitude"],
+        row["longitude"]
+    )
+    for _, row in companies.iterrows()
+]
 
-    cur.execute("""
+print(f"Batch inserting {len(values)} companies...")
+execute_values(cur, """
     INSERT INTO companies(
         name,
         industry,
@@ -24,23 +43,11 @@ for _, row in companies.iterrows():
         latitude,
         longitude
     )
-    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    """,
-    (
-        row["Company"],
-        row["Industry"],
-        row["Country"],
-        row["Location_HQ"],
-        row["Continent"],
-        row["Stage"],
-        row["Money_Raised_in__mil"],
-        row["latitude"],
-        row["longitude"]
-    ))
+    VALUES %s
+""", values)
 
 conn.commit()
-
 cur.close()
 conn.close()
 
-print("Companies Loaded")
+print("Companies Loaded Successfully!")

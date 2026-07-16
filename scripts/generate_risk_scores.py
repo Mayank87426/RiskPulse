@@ -102,10 +102,9 @@ GROUP BY c.id, c.name;
 
 rows = cur.fetchall()
 
-count = 0
+values = []
 
 for row in rows:
-
     company_id = row[0]
     company_name = row[1]
     layoff_events = row[2]
@@ -119,22 +118,8 @@ for row in rows:
         latest_layoff,
         max_percentage
     )
-
-    cur.execute("""
-        INSERT INTO workforce_risk(
-            company_id,
-            workforce_risk_score,
-            risk_level,
-            layoff_events,
-            total_employees_laid_off,
-            latest_layoff,
-            max_percentage_laid_off,
-            risk_reasons,
-            model_version
-        )
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    """,
-    (
+    
+    values.append((
         company_id,
         score,
         level,
@@ -146,15 +131,30 @@ for row in rows:
         "rule_v1"
     ))
 
-    count += 1
+print(f"Batch inserting {len(values)} risk scores...")
+from psycopg2.extras import execute_values
+execute_values(cur, """
+    INSERT INTO workforce_risk(
+        company_id,
+        workforce_risk_score,
+        risk_level,
+        layoff_events,
+        total_employees_laid_off,
+        latest_layoff,
+        max_percentage_laid_off,
+        risk_reasons,
+        model_version
+    )
+    VALUES %s
+""", values)
 
 conn.commit()
-
 cur.close()
 conn.close()
 
 print("=" * 50)
-print(f"Generated risk scores for {count} companies.")
+print(f"Generated risk scores for {len(values)} companies.")
 print("Model Version : rule_v1")
 print("=" * 50)
+
 
