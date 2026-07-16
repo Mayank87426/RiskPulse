@@ -36,7 +36,7 @@ flowchart TD
 
     %% Data layer
     subgraph Storage ["1. Relational Storage Layer"]
-        DB[(PostgreSQL Database<br>companies | layoffs | news)]:::db
+        DB[(PostgreSQL Database<br>companies, layoffs, news)]:::db
     end
 
     %% Pipeline Stage 1
@@ -47,9 +47,9 @@ flowchart TD
 
     %% Pipeline Stage 2
     subgraph Optimization ["3. Core Optimization Engine"]
-        FS[Feature Selection<br>- Mutual Info | SHAP | RFE]:::pipeline
+        FS[Feature Selection<br>- Mutual Info, SHAP, RFE]:::pipeline
         HPO[Bayesian HPO<br>- Optuna 100 trials<br>- Stratified K-Fold CV]:::pipeline
-        BM[Classifier Benchmarking<br>- LGBM | XGBoost | RF<br>- Stacking & Voting Ensembles]:::pipeline
+        BM[Classifier Benchmarking<br>- LGBM, XGBoost, RF<br>- Stacking & Voting Ensembles]:::pipeline
     end
 
     %% Pipeline Stage 3

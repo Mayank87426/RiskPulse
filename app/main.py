@@ -1,7 +1,17 @@
+# ── CRITICAL: Virtual-env path shim (must run before ANY library import) ─────
+# Models are pickled under .venv with scikit-learn 1.9.x.  If Streamlit is
+# launched from a different Python (e.g. global install with sklearn 1.8.x),
+# unpickling crashes with "No module named '_loss'".  We pre-insert the .venv
+# site-packages so the correct sklearn is always resolved first.
+import sys, os
+from pathlib import Path as _Path
+_venv_site = _Path(__file__).resolve().parent.parent / ".venv" / "Lib" / "site-packages"
+if _venv_site.exists() and str(_venv_site) not in sys.path:
+    sys.path.insert(0, str(_venv_site))
+# ─────────────────────────────────────────────────────────────────────────────
+
 import streamlit as st
 import pandas as pd
-import sys
-import os
 
 # Add 'app' directory to system path to ensure reliable module imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))

@@ -6,11 +6,22 @@ from pathlib import Path
 import pandas as pd
 import plotly.graph_objects as go
 
-# Ensure ml/ directory is importable
+# ── sklearn version shim ────────────────────────────────────────────────────
+# Models are pickled under .venv (scikit-learn 1.9.x).  If Streamlit is
+# started from a different Python environment the unpickle will crash with
+# "No module named '_loss'".  We pre-insert the .venv site-packages so the
+# correct sklearn is always found first, regardless of how the user launched
+# the app.
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+_venv_site = PROJECT_ROOT / ".venv" / "Lib" / "site-packages"
+if _venv_site.exists() and str(_venv_site) not in sys.path:
+    sys.path.insert(0, str(_venv_site))
+
+# Ensure ml/ directory is importable
 ML_DIR = PROJECT_ROOT / "ml"
 sys.path.insert(0, str(ML_DIR))
 sys.path.insert(0, str(PROJECT_ROOT))
+
 
 
 @st.cache_resource(show_spinner=False)
